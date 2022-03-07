@@ -1,18 +1,28 @@
 package ocm
 
 import (
+	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	sdkcfg "github.com/openshift-online/ocm-cli/pkg/config"
+	mocks "github.com/openshift/configuration-anomaly-detection/pkg/ocm/mock"
 )
 
 var _ = Describe("OCM", func() {
 	Describe("When trying to load a configuration", func() {
 		var (
-			config         *sdkcfg.Config
-			configLocation string
+			config           *sdkcfg.Config
+			mockCtrl         *gomock.Controller
+			client           *ocmClient
+			mocOCMConnection *mocks.MockocmHandlerIf
+			err              error
+			configLocation   string
 		)
 		JustBeforeEach(func() {
+			mockCtrl = gomock.NewController(GinkgoT())
+			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
+			client = &ocmClient{comm: mocOCMConnection}
+
 			config, err = newConfigFromFile(configLocation)
 		})
 
@@ -29,6 +39,11 @@ var _ = Describe("OCM", func() {
 					TokenURL:     "DUMMYVALUE",
 					URL:          "DUMMYVALUE",
 				}))
+				// config = sdkcfg.Config{blab:ba}
+				// writeToFIle(config, fp)
+				// loadedconfig :=loadFile(fp)
+				// Except(config).To(Equal(loadedconfig))
+				// rm
 			})
 		})
 
@@ -38,8 +53,9 @@ var _ = Describe("OCM", func() {
 			})
 			It("should return an empty configuration", func() {
 				Expect(err).Error().Should(HaveOccurred())
-				Expect(config).To(Equal(&sdkcfg.Config{}))
+				Expect(config).To(Equal(nil))
 			})
 		})
 	})
+	Describe("")
 })

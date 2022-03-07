@@ -8,14 +8,32 @@ import (
 	_ "github.com/golang/mock/mockgen/model"
 	sdkcfg "github.com/openshift-online/ocm-cli/pkg/config"
 	sdk "github.com/openshift-online/ocm-sdk-go"
+	v1 "github.com/openshift-online/ocm-sdk-go/clustersmgmt/v1"
 
 	awsv1alpha1 "github.com/openshift/aws-account-operator/pkg/apis/aws/v1alpha1"
 	hivev1 "github.com/openshift/hive/apis/hive/v1"
 )
 
-type ocmClient struct {
+//go:generate mockgen -source $GOFILE -destination mock/mockOcmHandler.go -package $GOPACKAGE ocmHandlerIf
+
+type ocmHandlerIf interface {
+	OcmGetResourceLive(clusterID string) (*v1.ClusterResourcesGetResponse, error)
+}
+type ocmHandler struct {
 	conn *sdk.Connection
+}
+
+func (o ocmHandler) OcmGetResourceLive(clusterID string) (*v1.ClusterResourcesGetResponse, error) {
+	return o.conn.ClustersMgmt().V1().Clusters().Cluster(clusterID).Resources().Live().Get().Send()
+}
+
+// sendSL
+// getClusterINFO
+
+type ocmClient struct {
+	//conn *sdk.Connection
 	cfg  *sdkcfg.Config
+	comm ocmHandlerIf
 }
 
 // New will create a new ocm client by using the path to a config file
@@ -32,7 +50,8 @@ func New(ocmConfigFile string) (ocmClient, error) {
 	if err != nil {
 		return client, fmt.Errorf("can't create connection: %w", err)
 	}
-	client.conn = conn
+
+	client.comm = &ocmHandler{conn: conn}
 	return client, nil
 }
 
@@ -82,8 +101,7 @@ func (client ocmClient) GetClusterDeployment(clusterID string) (*hivev1.ClusterD
 
 // getClusterResource allows to load different cluster resources
 func (client ocmClient) getClusterResource(clusterID string, resourceKey string) (string, error) {
-
-	response, err := client.conn.ClustersMgmt().V1().Clusters().Cluster(clusterID).Resources().Live().Get().Send()
+	response, err := client.comm.OcmGetResourceLive(clusterID)
 	if err != nil {
 		return "", err
 	}
@@ -103,7 +121,7 @@ func newConfigFromFile(ocmConfigFile string) (*sdkcfg.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	if cfg == nil {
+	if cfg == nil || cfg == (&sdkcfg.Config{}) {
 		return nil, fmt.Errorf("not logged in")
 	}
 	return cfg, err
