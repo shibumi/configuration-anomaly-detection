@@ -1,12 +1,11 @@
 package ocm
 
 import (
-	"fmt"
-
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	sdkcfg "github.com/openshift-online/ocm-cli/pkg/config"
+	v1 "github.com/openshift-online/ocm-sdk-go/clustersmgmt/v1"
 	mocks "github.com/openshift/configuration-anomaly-detection/pkg/ocm/mock"
 )
 
@@ -50,7 +49,7 @@ var _ = Describe("OCM", func() {
 		})
 	})
 
-	Describe("When initializing a new OCM client", func() {
+	Describe("When having a valid cluster ID", func() {
 		var (
 			mockCtrl         *gomock.Controller
 			client           *ocmClient
@@ -60,7 +59,16 @@ var _ = Describe("OCM", func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
 			client = &ocmClient{comm: mocOCMConnection}
-			fmt.Println(client)
+		})
+		When("getting the cluster deployment with the valid cluster ID", func() {
+			It("should return a valid hivev1 deployment", func() {
+				// this test fails, because v1.ClusterResourcesGetResponse{} is empty, but we need a valid JSON string in GetClusterDeployment
+				// I don't know how to solve this without mocking the getClusterResource() method as well. Any idea?
+				mocOCMConnection.EXPECT().OcmGetResourceLive(gomock.Any()).Return(&v1.ClusterResourcesGetResponse{}, nil).Times(1)
+				cd, err := client.GetClusterDeployment("valid-cluster-test-id-1")
+				Expect(err).ShouldNot(HaveOccurred())
+				Expect(cd).Should(Equal(&v1.ClusterResourcesGetResponse{}))
+			})
 		})
 	})
 })
