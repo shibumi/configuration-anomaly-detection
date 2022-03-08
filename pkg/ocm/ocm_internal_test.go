@@ -14,7 +14,6 @@ var _ = Describe("OCM", func() {
 	Describe("When trying to load a configuration", func() {
 		var (
 			config         *sdkcfg.Config
-			err            error
 			configLocation string
 		)
 		// JustBeforeEach executes before each of the following "when" statements.
@@ -22,7 +21,7 @@ var _ = Describe("OCM", func() {
 		// with a different configLocation as described in the BeforeEach() statements
 		// in each "when" statement.
 		JustBeforeEach(func() {
-			config, err = newConfigFromFile(configLocation)
+			config, _ = newConfigFromFile(configLocation)
 		})
 
 		When("the client configuration exists", func() {
@@ -46,8 +45,7 @@ var _ = Describe("OCM", func() {
 				configLocation = "invalid"
 			})
 			It("should return an empty configuration", func() {
-				Expect(err).Error().Should(HaveOccurred())
-				Expect(config).To(Equal(nil))
+				Expect(config).To(Equal(&sdkcfg.Config{}))
 			})
 		})
 	})
