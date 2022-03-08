@@ -8,7 +8,6 @@ import (
 	_ "github.com/golang/mock/mockgen/model"
 	sdkcfg "github.com/openshift-online/ocm-cli/pkg/config"
 	sdk "github.com/openshift-online/ocm-sdk-go"
-	v1 "github.com/openshift-online/ocm-sdk-go/clustersmgmt/v1"
 
 	awsv1alpha1 "github.com/openshift/aws-account-operator/pkg/apis/aws/v1alpha1"
 	hivev1 "github.com/openshift/hive/apis/hive/v1"
@@ -17,14 +16,18 @@ import (
 //go:generate mockgen -source $GOFILE -destination mock/mockOcmHandler.go -package $GOPACKAGE ocmHandlerIf
 
 type ocmHandlerIf interface {
-	OcmGetResourceLive(clusterID string) (*v1.ClusterResourcesGetResponse, error)
+	OcmGetResourceLive(clusterID, resourceKey string) (string, error)
 }
 type ocmHandler struct {
 	conn *sdk.Connection
 }
 
-func (o ocmHandler) OcmGetResourceLive(clusterID string) (*v1.ClusterResourcesGetResponse, error) {
-	return o.conn.ClustersMgmt().V1().Clusters().Cluster(clusterID).Resources().Live().Get().Send()
+func (o ocmHandler) OcmGetResourceLive(clusterID, resourceKey string) (string, error) {
+	response, err := o.conn.ClustersMgmt().V1().Clusters().Cluster(clusterID).Resources().Live().Get().Send()
+	if err != nil {
+		return "", err
+	}
+	return response.Body().Resources()[resourceKey], nil
 }
 
 // sendSL
@@ -74,13 +77,13 @@ func (client ocmClient) GetSupportRoleARN(clusterID string) (string, error) {
 // GetAWSAccountClaim gets the AWS Account Claim object for a given cluster
 func (client ocmClient) GetAWSAccountClaim(clusterID string) (*awsv1alpha1.AccountClaim, error) {
 	ac := &awsv1alpha1.AccountClaim{}
-	acString, err := client.getClusterResource(clusterID, "aws_account_claim")
+	acString, err := client.comm.OcmGetResourceLive(clusterID, "aws_account_claim")
 	if err != nil {
-		return ac, fmt.Errorf("client failed to load GetAWSAccountClaim: %w", err)
+		return nil, fmt.Errorf("client failed to load GetAWSAccountClaim: %w", err)
 	}
 	err = json.Unmarshal([]byte(acString), ac)
 	if err != nil {
-		return ac, fmt.Errorf("failed to unmarshal client response (%s) with error: %w", acString, err)
+		return nil, fmt.Errorf("failed to unmarshal client response (%s) with error: %w", acString, err)
 	}
 	return ac, err
 }
@@ -88,24 +91,15 @@ func (client ocmClient) GetAWSAccountClaim(clusterID string) (*awsv1alpha1.Accou
 // GetClusterDeployment gets the ClusterDeployment object for a given cluster
 func (client ocmClient) GetClusterDeployment(clusterID string) (*hivev1.ClusterDeployment, error) {
 	cd := &hivev1.ClusterDeployment{}
-	cdString, err := client.getClusterResource(clusterID, "cluster_deployment")
+	cdString, err := client.comm.OcmGetResourceLive(clusterID, "cluster_deployment")
 	if err != nil {
-		return cd, fmt.Errorf("client failed to load ClusterDeployment: %w", err)
+		return nil, fmt.Errorf("client failed to load ClusterDeployment: %w", err)
 	}
 	err = json.Unmarshal([]byte(cdString), cd)
 	if err != nil {
-		return cd, fmt.Errorf("failed to unmarshal client response (%s) with error: %w", cdString, err)
+		return nil, fmt.Errorf("failed to unmarshal payload (%s) with error: %w", cdString, err)
 	}
 	return cd, nil
-}
-
-// getClusterResource allows to load different cluster resources
-func (client ocmClient) getClusterResource(clusterID string, resourceKey string) (string, error) {
-	response, err := client.comm.OcmGetResourceLive(clusterID)
-	if err != nil {
-		return "", err
-	}
-	return response.Body().Resources()[resourceKey], nil
 }
 
 // newConfigFromFile loads the configuration file (ocmConfigFile, ~/.ocm.json, /ocm/ocm.json)

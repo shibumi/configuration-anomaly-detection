@@ -8,7 +8,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	v1 "github.com/openshift-online/ocm-sdk-go/clustersmgmt/v1"
 )
 
 // MockocmHandlerIf is a mock of ocmHandlerIf interface.
@@ -35,16 +34,16 @@ func (m *MockocmHandlerIf) EXPECT() *MockocmHandlerIfMockRecorder {
 }
 
 // OcmGetResourceLive mocks base method.
-func (m *MockocmHandlerIf) OcmGetResourceLive(clusterID string) (*v1.ClusterResourcesGetResponse, error) {
+func (m *MockocmHandlerIf) OcmGetResourceLive(clusterID, resourceKey string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "OcmGetResourceLive", clusterID)
-	ret0, _ := ret[0].(*v1.ClusterResourcesGetResponse)
+	ret := m.ctrl.Call(m, "OcmGetResourceLive", clusterID, resourceKey)
+	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // OcmGetResourceLive indicates an expected call of OcmGetResourceLive.
-func (mr *MockocmHandlerIfMockRecorder) OcmGetResourceLive(clusterID interface{}) *gomock.Call {
+func (mr *MockocmHandlerIfMockRecorder) OcmGetResourceLive(clusterID, resourceKey interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OcmGetResourceLive", reflect.TypeOf((*MockocmHandlerIf)(nil).OcmGetResourceLive), clusterID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OcmGetResourceLive", reflect.TypeOf((*MockocmHandlerIf)(nil).OcmGetResourceLive), clusterID, resourceKey)
 }
