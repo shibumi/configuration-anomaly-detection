@@ -1,6 +1,8 @@
 package ocm
 
 import (
+	"fmt"
+
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -11,18 +13,15 @@ import (
 var _ = Describe("OCM", func() {
 	Describe("When trying to load a configuration", func() {
 		var (
-			config           *sdkcfg.Config
-			mockCtrl         *gomock.Controller
-			client           *ocmClient
-			mocOCMConnection *mocks.MockocmHandlerIf
-			err              error
-			configLocation   string
+			config         *sdkcfg.Config
+			err            error
+			configLocation string
 		)
+		// JustBeforeEach executes before each of the following "when" statements.
+		// This means: We run for each when statement "newConfigFromFile(configLocation)"
+		// with a different configLocation as described in the BeforeEach() statements
+		// in each "when" statement.
 		JustBeforeEach(func() {
-			mockCtrl = gomock.NewController(GinkgoT())
-			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
-			client = &ocmClient{comm: mocOCMConnection}
-
 			config, err = newConfigFromFile(configLocation)
 		})
 
@@ -39,11 +38,6 @@ var _ = Describe("OCM", func() {
 					TokenURL:     "DUMMYVALUE",
 					URL:          "DUMMYVALUE",
 				}))
-				// config = sdkcfg.Config{blab:ba}
-				// writeToFIle(config, fp)
-				// loadedconfig :=loadFile(fp)
-				// Except(config).To(Equal(loadedconfig))
-				// rm
 			})
 		})
 
@@ -57,5 +51,18 @@ var _ = Describe("OCM", func() {
 			})
 		})
 	})
-	Describe("")
+
+	Describe("When initializing a new OCM client", func() {
+		var (
+			mockCtrl         *gomock.Controller
+			client           *ocmClient
+			mocOCMConnection *mocks.MockocmHandlerIf
+		)
+		BeforeEach(func() {
+			mockCtrl = gomock.NewController(GinkgoT())
+			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
+			client = &ocmClient{comm: mocOCMConnection}
+			fmt.Println(client)
+		})
+	})
 })
