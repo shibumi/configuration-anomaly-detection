@@ -1,4 +1,4 @@
-package ocm
+package ocm_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestPagerduty(t *testing.T) {
+func TestOcm(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "OCM Suite")
 }

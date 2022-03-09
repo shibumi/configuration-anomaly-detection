@@ -30,36 +30,34 @@ func (o ocmHandler) OcmGetResourceLive(clusterID, resourceKey string) (string, e
 	return response.Body().Resources()[resourceKey], nil
 }
 
-// sendSL
-// getClusterINFO
-
-type ocmClient struct {
+// OcmClient provides a client for the Openshift Cluster Manager
+type OcmClient struct {
 	//conn *sdk.Connection
-	cfg  *sdkcfg.Config
-	comm ocmHandlerIf
+	Cfg  *sdkcfg.Config
+	Comm ocmHandlerIf
 }
 
 // New will create a new ocm client by using the path to a config file
 // if no path is provided, it will assume it in the default path
-func New(ocmConfigFile string) (ocmClient, error) {
-	client := ocmClient{}
+func New(ocmConfigFile string) (OcmClient, error) {
+	client := OcmClient{}
 	cfg, err := newConfigFromFile(ocmConfigFile)
 	if err != nil {
 		return client, fmt.Errorf("failed to load config file: %w", err)
 	}
-	client.cfg = cfg
+	client.Cfg = cfg
 
-	conn, err := client.cfg.Connection()
+	conn, err := client.Cfg.Connection()
 	if err != nil {
 		return client, fmt.Errorf("can't create connection: %w", err)
 	}
 
-	client.comm = &ocmHandler{conn: conn}
+	client.Comm = &ocmHandler{conn: conn}
 	return client, nil
 }
 
 // GetSupportRoleARN returns the support role ARN that allows the access to the cluster
-func (client ocmClient) GetSupportRoleARN(clusterID string) (string, error) {
+func (client OcmClient) GetSupportRoleARN(clusterID string) (string, error) {
 	claim, err := client.GetAWSAccountClaim(clusterID)
 	if err != nil {
 		return "", fmt.Errorf("failed to get account claim: %w", err)
@@ -75,9 +73,9 @@ func (client ocmClient) GetSupportRoleARN(clusterID string) (string, error) {
 }
 
 // GetAWSAccountClaim gets the AWS Account Claim object for a given cluster
-func (client ocmClient) GetAWSAccountClaim(clusterID string) (*awsv1alpha1.AccountClaim, error) {
+func (client OcmClient) GetAWSAccountClaim(clusterID string) (*awsv1alpha1.AccountClaim, error) {
 	ac := &awsv1alpha1.AccountClaim{}
-	acString, err := client.comm.OcmGetResourceLive(clusterID, "aws_account_claim")
+	acString, err := client.Comm.OcmGetResourceLive(clusterID, "aws_account_claim")
 	if err != nil {
 		return nil, fmt.Errorf("client failed to load GetAWSAccountClaim: %w", err)
 	}
@@ -89,9 +87,9 @@ func (client ocmClient) GetAWSAccountClaim(clusterID string) (*awsv1alpha1.Accou
 }
 
 // GetClusterDeployment gets the ClusterDeployment object for a given cluster
-func (client ocmClient) GetClusterDeployment(clusterID string) (*hivev1.ClusterDeployment, error) {
+func (client OcmClient) GetClusterDeployment(clusterID string) (*hivev1.ClusterDeployment, error) {
 	cd := &hivev1.ClusterDeployment{}
-	cdString, err := client.comm.OcmGetResourceLive(clusterID, "cluster_deployment")
+	cdString, err := client.Comm.OcmGetResourceLive(clusterID, "cluster_deployment")
 	if err != nil {
 		return nil, fmt.Errorf("client failed to load ClusterDeployment: %w", err)
 	}

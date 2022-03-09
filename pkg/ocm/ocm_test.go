@@ -1,4 +1,4 @@
-package ocm
+package ocm_test
 
 import (
 	"errors"
@@ -11,13 +11,14 @@ import (
 	hivev1 "github.com/openshift/hive/apis/hive/v1"
 	"k8s.io/apimachinery/pkg/util/json"
 
+	"github.com/openshift/configuration-anomaly-detection/pkg/ocm"
 	mocks "github.com/openshift/configuration-anomaly-detection/pkg/ocm/mock"
 )
 
 var _ = Describe("OCM", func() {
 	var (
 		mockCtrl          *gomock.Controller
-		client            *ocmClient
+		client            *ocm.OcmClient
 		mocOCMConnection  *mocks.MockocmHandlerIf
 		clusterDeployment *hivev1.ClusterDeployment
 		awsAccountClaim   *awsv1alpha1.AccountClaim
@@ -29,7 +30,7 @@ var _ = Describe("OCM", func() {
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
-			client = &ocmClient{comm: mocOCMConnection}
+			client = &ocm.OcmClient{Comm: mocOCMConnection}
 			err = fmt.Errorf("some error")
 			clustername = "test-cluster"
 			clusterDeployment = &hivev1.ClusterDeployment{Spec: hivev1.ClusterDeploymentSpec{ClusterName: clustername}}
@@ -65,7 +66,7 @@ var _ = Describe("OCM", func() {
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
-			client = &ocmClient{comm: mocOCMConnection}
+			client = &ocm.OcmClient{Comm: mocOCMConnection}
 			err = fmt.Errorf("some error")
 			clustername = "test-cluster"
 			awsAccountClaim = &awsv1alpha1.AccountClaim{Spec: awsv1alpha1.AccountClaimSpec{STSRoleARN: "support-role"}}
@@ -101,7 +102,7 @@ var _ = Describe("OCM", func() {
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
-			client = &ocmClient{comm: mocOCMConnection}
+			client = &ocm.OcmClient{Comm: mocOCMConnection}
 			err = fmt.Errorf("some error")
 			clustername = "test-cluster"
 			supportRoleArn = "support-role"
