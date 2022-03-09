@@ -30,7 +30,7 @@ var _ = Describe("OCM", func() {
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
-			client = &ocm.OcmClient{Comm: mocOCMConnection}
+			client = ocm.NewOcmClient(mocOCMConnection)
 			err = fmt.Errorf("some error")
 			clustername = "test-cluster"
 			clusterDeployment = &hivev1.ClusterDeployment{Spec: hivev1.ClusterDeploymentSpec{ClusterName: clustername}}
@@ -73,7 +73,7 @@ var _ = Describe("OCM", func() {
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
-			client = &ocm.OcmClient{Comm: mocOCMConnection}
+			client = ocm.NewOcmClient(mocOCMConnection)
 			err = fmt.Errorf("some error")
 			clustername = "test-cluster"
 			awsAccountClaim = &awsv1alpha1.AccountClaim{Spec: awsv1alpha1.AccountClaimSpec{STSRoleARN: "support-role"}}
@@ -115,7 +115,7 @@ var _ = Describe("OCM", func() {
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
-			client = &ocm.OcmClient{Comm: mocOCMConnection}
+			client = ocm.NewOcmClient(mocOCMConnection)
 			err = fmt.Errorf("some error")
 			clustername = "test-cluster"
 			supportRoleArn = "support-role"

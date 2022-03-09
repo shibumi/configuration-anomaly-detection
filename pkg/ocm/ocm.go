@@ -33,8 +33,13 @@ func (o ocmHandler) OcmGetResourceLive(clusterID, resourceKey string) (string, e
 // OcmClient provides a client for the Openshift Cluster Manager
 type OcmClient struct {
 	//conn *sdk.Connection
-	Cfg  *sdkcfg.Config
-	Comm ocmHandlerIf
+	cfg  *sdkcfg.Config
+	comm ocmHandlerIf
+}
+
+// NewOcmClient creates a new Openshift Cluster Manager client
+func NewOcmClient(comm ocmHandlerIf) *OcmClient {
+	return &OcmClient{comm: comm}
 }
 
 // New will create a new ocm client by using the path to a config file
@@ -45,14 +50,14 @@ func New(ocmConfigFile string) (OcmClient, error) {
 	if err != nil {
 		return client, fmt.Errorf("failed to load config file: %w", err)
 	}
-	client.Cfg = cfg
+	client.cfg = cfg
 
-	conn, err := client.Cfg.Connection()
+	conn, err := client.cfg.Connection()
 	if err != nil {
 		return client, fmt.Errorf("can't create connection: %w", err)
 	}
 
-	client.Comm = &ocmHandler{conn: conn}
+	client.comm = &ocmHandler{conn: conn}
 	return client, nil
 }
 
@@ -75,7 +80,7 @@ func (client OcmClient) GetSupportRoleARN(clusterID string) (string, error) {
 // GetAWSAccountClaim gets the AWS Account Claim object for a given cluster
 func (client OcmClient) GetAWSAccountClaim(clusterID string) (*awsv1alpha1.AccountClaim, error) {
 	ac := &awsv1alpha1.AccountClaim{}
-	acString, err := client.Comm.OcmGetResourceLive(clusterID, "aws_account_claim")
+	acString, err := client.comm.OcmGetResourceLive(clusterID, "aws_account_claim")
 	if err != nil {
 		return nil, fmt.Errorf("client failed to load GetAWSAccountClaim: %w", err)
 	}
@@ -89,7 +94,7 @@ func (client OcmClient) GetAWSAccountClaim(clusterID string) (*awsv1alpha1.Accou
 // GetClusterDeployment gets the ClusterDeployment object for a given cluster
 func (client OcmClient) GetClusterDeployment(clusterID string) (*hivev1.ClusterDeployment, error) {
 	cd := &hivev1.ClusterDeployment{}
-	cdString, err := client.Comm.OcmGetResourceLive(clusterID, "cluster_deployment")
+	cdString, err := client.comm.OcmGetResourceLive(clusterID, "cluster_deployment")
 	if err != nil {
 		return nil, fmt.Errorf("client failed to load ClusterDeployment: %w", err)
 	}
