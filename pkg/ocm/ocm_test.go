@@ -15,15 +15,17 @@ import (
 )
 
 var _ = Describe("OCM", func() {
+	var (
+		mockCtrl          *gomock.Controller
+		client            *ocmClient
+		mocOCMConnection  *mocks.MockocmHandlerIf
+		clusterDeployment *hivev1.ClusterDeployment
+		awsAccountClaim   *awsv1alpha1.AccountClaim
+		err               error
+		clustername       string
+		supportRoleArn    string
+	)
 	Describe("When fetching a ClusterDeployment", func() {
-		var (
-			mockCtrl          *gomock.Controller
-			client            *ocmClient
-			mocOCMConnection  *mocks.MockocmHandlerIf
-			clusterDeployment *hivev1.ClusterDeployment
-			err               error
-			clustername       string
-		)
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
@@ -60,14 +62,6 @@ var _ = Describe("OCM", func() {
 		})
 	})
 	Describe("When fetching AWSAccountClaim", func() {
-		var (
-			mockCtrl         *gomock.Controller
-			client           *ocmClient
-			mocOCMConnection *mocks.MockocmHandlerIf
-			awsAccountClaim  *awsv1alpha1.AccountClaim
-			err              error
-			clustername      string
-		)
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
@@ -104,15 +98,6 @@ var _ = Describe("OCM", func() {
 		})
 	})
 	Describe("When fetching SupportRoleArn", func() {
-		var (
-			mockCtrl         *gomock.Controller
-			client           *ocmClient
-			mocOCMConnection *mocks.MockocmHandlerIf
-			awsAccountClaim  *awsv1alpha1.AccountClaim
-			err              error
-			clustername      string
-			supportRoleArn   string
-		)
 		BeforeEach(func() {
 			mockCtrl = gomock.NewController(GinkgoT())
 			mocOCMConnection = mocks.NewMockocmHandlerIf(mockCtrl)
