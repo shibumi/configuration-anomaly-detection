@@ -37,7 +37,8 @@ var _ = Describe("OCM", func() {
 		})
 		When("cluster ID is valid", func() {
 			It("should return a valid ClusterDeployment", func() {
-				cdstring, _ := json.Marshal(clusterDeployment)
+				cdstring, err := json.Marshal(clusterDeployment)
+				Expect(err).ShouldNot(HaveOccurred())
 				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").
 					Return(string(cdstring), nil).Times(1)
 
