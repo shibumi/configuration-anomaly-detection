@@ -38,7 +38,9 @@ var _ = Describe("OCM", func() {
 		When("cluster ID is valid", func() {
 			It("should return a valid ClusterDeployment", func() {
 				cdstring, _ := json.Marshal(clusterDeployment)
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").Return(string(cdstring), nil).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").
+					Return(string(cdstring), nil).Times(1)
+
 				cd_out, err := client.GetClusterDeployment(clustername)
 				Expect(err).ShouldNot(HaveOccurred())
 				Expect(clusterDeployment).Should(Equal(cd_out))
@@ -46,7 +48,9 @@ var _ = Describe("OCM", func() {
 		})
 		When("the cluster doesn't exist or any other error happends in the sdk", func() {
 			It("wrapps the error message and returns nil", func() {
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").Return("", err).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").
+					Return("", err).Times(1)
+
 				cd_out, err_out := client.GetClusterDeployment(clustername)
 				Expect(err_out).Should(HaveOccurred())
 				Expect(errors.Unwrap(err_out)).Should(Equal(err))
@@ -55,7 +59,9 @@ var _ = Describe("OCM", func() {
 		})
 		When("the cluster exists but the specified resource doesn not exist", func() {
 			It("will return an error", func() {
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").Return("", nil).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").
+					Return("", nil).Times(1)
+
 				cd_out, err_out := client.GetClusterDeployment(clustername)
 				Expect(err_out).Should(HaveOccurred())
 				Expect(cd_out).Should(BeNil())
@@ -74,7 +80,9 @@ var _ = Describe("OCM", func() {
 		When("cluster ID is valid", func() {
 			It("should return a valid AWSAccountClaim", func() {
 				cdstring, _ := json.Marshal(awsAccountClaim)
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").Return(string(cdstring), nil).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
+					Return(string(cdstring), nil).Times(1)
+
 				ac_out, err := client.GetAWSAccountClaim(clustername)
 				Expect(err).ShouldNot(HaveOccurred())
 				Expect(awsAccountClaim).Should(Equal(ac_out))
@@ -82,7 +90,9 @@ var _ = Describe("OCM", func() {
 		})
 		When("the cluster doesn't exist or any other error happends in the sdk", func() {
 			It("wrapps the error and returns nil", func() {
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").Return("", err).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
+					Return("", err).Times(1)
+
 				ac_out, err_out := client.GetAWSAccountClaim(clustername)
 				Expect(err_out).Should(HaveOccurred())
 				Expect(errors.Unwrap(err_out)).Should(Equal(err))
@@ -91,7 +101,9 @@ var _ = Describe("OCM", func() {
 		})
 		When("the cluster exists but the specified resource doesn not exist", func() {
 			It("will return an error", func() {
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").Return("", nil).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
+					Return("", nil).Times(1)
+
 				ac_out, err_out := client.GetAWSAccountClaim(clustername)
 				Expect(err_out).Should(HaveOccurred())
 				Expect(ac_out).Should(BeNil())
@@ -111,7 +123,9 @@ var _ = Describe("OCM", func() {
 		When("cluster ID is valid", func() {
 			It("should return a valid ARN", func() {
 				acstring, _ := json.Marshal(awsAccountClaim)
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").Return(string(acstring), nil).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
+					Return(string(acstring), nil).Times(1)
+
 				arn_out, err := client.GetSupportRoleARN(clustername)
 				Expect(err).ShouldNot(HaveOccurred())
 				Expect(supportRoleArn).Should(Equal(arn_out))
@@ -121,7 +135,9 @@ var _ = Describe("OCM", func() {
 			It("should return an error", func() {
 				awsAccountClaim.Spec.SupportRoleARN = ""
 				acstring, _ := json.Marshal(awsAccountClaim)
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").Return(string(acstring), nil).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
+					Return(string(acstring), nil).Times(1)
+
 				arn_out, err := client.GetSupportRoleARN(clustername)
 				Expect(err).Should(HaveOccurred())
 				Expect(arn_out).Should(Equal(""))
@@ -129,7 +145,9 @@ var _ = Describe("OCM", func() {
 		})
 		When("the cluster doesn't exist or any other error happends in the sdk", func() {
 			It("wrapps the error and returns empty string", func() {
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").Return("", err).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
+					Return("", err).Times(1)
+
 				arn_out, err_out := client.GetSupportRoleARN(clustername)
 				Expect(err_out).Should(HaveOccurred())
 				Expect(arn_out).Should(Equal(""))
@@ -137,7 +155,9 @@ var _ = Describe("OCM", func() {
 		})
 		When("the cluster exists but the specified resource doesn not exist", func() {
 			It("will return an error", func() {
-				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").Return("", nil).Times(1)
+				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
+					Return("", nil).Times(1)
+
 				arn_out, err_out := client.GetSupportRoleARN(clustername)
 				Expect(err_out).Should(HaveOccurred())
 				Expect(arn_out).Should(Equal(""))
