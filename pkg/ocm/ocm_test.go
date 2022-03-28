@@ -47,7 +47,7 @@ var _ = Describe("OCM", func() {
 				Expect(clusterDeployment).Should(Equal(cd_out))
 			})
 		})
-		When("the cluster doesn't exist or any other error happends in the sdk", func() {
+		When("the cluster doesn't exist or any other error happens in the sdk", func() {
 			It("wrapps the error message and returns nil", func() {
 				customError := errors.New("newErr")
 				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "cluster_deployment").
@@ -90,7 +90,7 @@ var _ = Describe("OCM", func() {
 				Expect(awsAccountClaim).Should(Equal(ac_out))
 			})
 		})
-		When("the cluster doesn't exist or any other error happends in the sdk", func() {
+		When("the cluster doesn't exist or any other error happens in the sdk", func() {
 			It("wrapps the error and returns nil", func() {
 				customError := errors.New("newErr")
 				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
@@ -146,7 +146,7 @@ var _ = Describe("OCM", func() {
 				Expect(arn_out).Should(Equal(""))
 			})
 		})
-		When("the cluster doesn't exist or any other error happends in the sdk", func() {
+		When("the cluster doesn't exist or any other error happens in the sdk", func() {
 			It("wrapps the error and returns empty string", func() {
 				mocOCMConnection.EXPECT().OcmGetResourceLive(clustername, "aws_account_claim").
 					Return("", err).Times(1)
